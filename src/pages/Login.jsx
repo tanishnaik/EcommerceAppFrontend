@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../context/AuthContext";
 
 const container = {
   maxWidth: 400,
@@ -45,11 +46,13 @@ const errorStyle = {
   textAlign: "center",
 };
 
+
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
+  const { login } = useContext(AuthContext);
 
   const handleLogin = (e) => {
     e.preventDefault();
@@ -59,7 +62,7 @@ export default function Login() {
       setError("Invalid email or password");
       return;
     }
-    localStorage.setItem("currentUser", JSON.stringify(user));
+    login(user); // AuthContext will handle localStorage and state
     navigate("/");
   };
 
