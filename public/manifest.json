@@ -1,0 +1,21 @@
+{
+  "short_name": "ShopPro",
+  "name": "ShopPro - Modern eCommerce App",
+  "icons": [
+    {
+      "src": "/vite.svg",
+      "type": "image/svg+xml",
+      "sizes": "192x192"
+    },
+    {
+      "src": "/vite.svg",
+      "type": "image/svg+xml",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#2563eb",
+  "theme_color": "#2563eb",
+  "description": "A modern, feature-rich eCommerce PWA built with React."
+}
