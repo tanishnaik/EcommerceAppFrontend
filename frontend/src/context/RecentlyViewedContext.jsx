@@ -19,8 +19,10 @@ export function RecentlyViewedProvider({ children }) {
     });
   };
 
+  const clearRecentlyViewed = () => setRecentlyViewed([]);
+
   return (
-    <RecentlyViewedContext.Provider value={{ recentlyViewed, addRecentlyViewed }}>
+    <RecentlyViewedContext.Provider value={{ recentlyViewed, addRecentlyViewed, clearRecentlyViewed }}>
       {children}
     </RecentlyViewedContext.Provider>
   );

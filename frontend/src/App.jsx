@@ -2,7 +2,7 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import NavbarWithRoutes from "./components/Navbar";
-import Home from "./pages/Home";
+import HomePage from "./components/HomePage";
 import Compare from "./pages/Compare";
 import ProductDetail from "./pages/ProductDetail";
 import Cart from "./pages/Cart";
@@ -37,7 +37,7 @@ export default function App() {
                 <Router>
                   <NavbarWithRoutes />
                   <Routes>
-                    <Route path="/" element={<Home />} />
+                    <Route path="/" element={<HomePage />} />
                     <Route path="/product/:id" element={<ProductDetail />} />
                     <Route path="/cart" element={<ProtectedRoute><Cart /></ProtectedRoute>} />
                     <Route path="/wishlist" element={<Wishlist />} />

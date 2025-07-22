@@ -1,9 +1,11 @@
-import React from "react";
+import React, { useContext } from "react";
+import { ThemeContext } from "../context/ThemeContext";
 
 const aiName = "AI Assistant";
 const aiAvatar = "https://cdn-icons-png.flaticon.com/512/4712/4712035.png"; // Optional avatar
 
 const CustomerSupport = () => {
+  const { dark } = useContext(ThemeContext);
   const [messages, setMessages] = React.useState([
     { from: "ai", text: "Hi! I'm your AI assistant. How can I help you today?", time: new Date() }
   ]);
@@ -54,10 +56,12 @@ const CustomerSupport = () => {
     return "I'm here to help with orders, returns, and more!";
   }
 
-  // Inline styles
+
+  // Inline styles with dark theme support
   const root = {
     minHeight: "100vh",
-    background: "linear-gradient(135deg, #f8fafc 0%, #e0e7ff 100%)",
+    background: dark ? "#18181b" : "linear-gradient(135deg, #f8fafc 0%, #e0e7ff 100%)",
+    color: dark ? "#f3f4f6" : "#18181b",
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
@@ -68,9 +72,9 @@ const CustomerSupport = () => {
   const chatBox = {
     width: "100%",
     maxWidth: 420,
-    background: "#fff",
+    background: dark ? "#23232a" : "#fff",
     borderRadius: 18,
-    boxShadow: "0 4px 24px #2563eb22",
+    boxShadow: dark ? "0 4px 24px #00000044" : "0 4px 24px #2563eb22",
     margin: "32px 0 0 0",
     display: "flex",
     flexDirection: "column",
@@ -80,7 +84,7 @@ const CustomerSupport = () => {
     overflow: "hidden",
   };
   const header = {
-    background: "#2563eb",
+    background: dark ? "#23232a" : "#2563eb",
     color: "#fff",
     padding: "18px 24px",
     fontWeight: 700,
@@ -95,16 +99,16 @@ const CustomerSupport = () => {
     width: 32,
     height: 32,
     borderRadius: "50%",
-    background: "#fff",
+    background: dark ? "#23232a" : "#fff",
     objectFit: "cover",
-    border: "2px solid #fff",
-    boxShadow: "0 1px 4px #2563eb33",
+    border: dark ? "2px solid #23232a" : "2px solid #fff",
+    boxShadow: dark ? "0 1px 4px #00000044" : "0 1px 4px #2563eb33",
   };
   const messagesArea = {
     flex: 1,
     padding: "18px 12px 12px 12px",
     overflowY: "auto",
-    background: "#f3f4f6",
+    background: dark ? "#23232a" : "#f3f4f6",
     display: "flex",
     flexDirection: "column",
     gap: 10,
@@ -116,19 +120,25 @@ const CustomerSupport = () => {
     gap: 8,
   });
   const msgBubble = from => ({
-    background: from === "user" ? "#2563eb" : "#e0e7ff",
-    color: from === "user" ? "#fff" : "#18181b",
+    background: from === "user"
+      ? (dark ? "#2563eb" : "#2563eb")
+      : (dark ? "#23232a" : "#e0e7ff"),
+    color: from === "user"
+      ? "#fff"
+      : (dark ? "#f3f4f6" : "#18181b"),
     borderRadius: from === "user" ? "16px 16px 4px 16px" : "16px 16px 16px 4px",
     padding: "10px 16px",
     fontSize: 15,
     maxWidth: "75%",
-    boxShadow: from === "user" ? "0 1px 4px #2563eb44" : "0 1px 4px #2563eb22",
+    boxShadow: from === "user"
+      ? (dark ? "0 1px 4px #2563eb88" : "0 1px 4px #2563eb44")
+      : (dark ? "0 1px 4px #00000044" : "0 1px 4px #2563eb22"),
     wordBreak: "break-word",
     marginBottom: 2,
   });
   const timeStyle = {
     fontSize: 11,
-    color: "#64748b",
+    color: dark ? "#a1a1aa" : "#64748b",
     margin: from => (from === "user" ? "0 8px 0 0" : "0 0 0 8px"),
     alignSelf: "flex-end",
   };
@@ -136,24 +146,24 @@ const CustomerSupport = () => {
     display: "flex",
     alignItems: "center",
     padding: "12px 12px 12px 12px",
-    background: "#fff",
+    background: dark ? "#23232a" : "#fff",
     borderBottomLeftRadius: 18,
     borderBottomRightRadius: 18,
-    borderTop: "1px solid #e5e7eb",
+    borderTop: dark ? "1px solid #444" : "1px solid #e5e7eb",
     gap: 8,
   };
   const inputBox = {
     flex: 1,
     padding: "10px 14px",
     borderRadius: 8,
-    border: "1.5px solid #2563eb55",
+    border: dark ? "1.5px solid #444" : "1.5px solid #2563eb55",
     fontSize: 15,
     outline: "none",
-    background: "#f8fafc",
-    color: "#18181b",
+    background: dark ? "#18181b" : "#f8fafc",
+    color: dark ? "#f3f4f6" : "#18181b",
   };
   const sendBtn = {
-    background: loading ? "#a5b4fc" : "#2563eb",
+    background: loading ? (dark ? "#334155" : "#a5b4fc") : "#2563eb",
     color: "#fff",
     border: "none",
     borderRadius: 8,
@@ -165,7 +175,7 @@ const CustomerSupport = () => {
   };
   const typingStyle = {
     fontStyle: "italic",
-    color: "#64748b",
+    color: dark ? "#a1a1aa" : "#64748b",
     fontSize: 14,
     margin: "6px 0 0 8px",
     alignSelf: "flex-start",
@@ -232,7 +242,6 @@ const CustomerSupport = () => {
           <button onClick={handleSend} style={sendBtn} disabled={loading}>Send</button>
         </div>
       </div>
-      {/* Keyframes for typing animation */}
       <style>{`
         @media (max-width: 600px) {
           .chatBox { max-width: 100vw !important; min-width: 0 !important; }

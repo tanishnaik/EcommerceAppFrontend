@@ -87,6 +87,15 @@ export default function Checkout() {
     transition: 'background 0.2s',
   };
 
+  // Calculate total using discountedPrice if available
+  const currencySymbols = { INR: "₹", USD: "$", EUR: "€" };
+  const rates = { INR: 1, USD: 0.012, EUR: 0.011 };
+  const currency = "INR"; // For demo, you may want to get from global settings
+  const convert = (amount) => (amount * rates[currency]).toFixed(2);
+  const total = cart.reduce((sum, item) => {
+    const price = item.discountedPrice ?? item.price;
+    return sum + price * item.qty;
+  }, 0);
   return (
     <div style={container}>
       <h2 style={title}>Checkout</h2>
@@ -98,6 +107,52 @@ export default function Checkout() {
             Discount Applied: {discount}% OFF
           </div>
         )}
+      </div>
+      {/* Cart summary */}
+      <div style={{ marginBottom: 24 }}>
+        <h3 style={{ fontSize: 20, fontWeight: 600, marginBottom: 12 }}>Order Summary</h3>
+        <table style={{ width: '100%', marginBottom: 12 }}>
+          <thead>
+            <tr>
+              <th style={{ textAlign: 'left' }}>Product</th>
+              <th style={{ textAlign: 'right' }}>Price</th>
+              <th style={{ textAlign: 'right' }}>Qty</th>
+              <th style={{ textAlign: 'right' }}>Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            {cart.map(item => (
+              <tr key={item.id}>
+                <td>{item.name}</td>
+                <td style={{ textAlign: 'right' }}>
+                  {item.discountedPrice ? (
+                    <>
+                      <span style={{ textDecoration: 'line-through', color: '#ef4444', marginRight: 6 }}>{currencySymbols[currency]}{convert(item.price)}</span>
+                      <span style={{ color: '#22c55e', fontWeight: 700 }}>{currencySymbols[currency]}{convert(item.discountedPrice)}</span>
+                      <span style={{ color: '#2563eb', marginLeft: 6 }}>({item.discountPercent}% OFF)</span>
+                    </>
+                  ) : (
+                    <>{currencySymbols[currency]}{convert(item.price)}</>
+                  )}
+                </td>
+                <td style={{ textAlign: 'right' }}>{item.qty}</td>
+                <td style={{ textAlign: 'right' }}>
+                  {item.discountedPrice ? (
+                    <>
+                      <span style={{ textDecoration: 'line-through', color: '#ef4444', marginRight: 6 }}>{currencySymbols[currency]}{convert(item.price * item.qty)}</span>
+                      <span style={{ color: '#22c55e', fontWeight: 700 }}>{currencySymbols[currency]}{convert(item.discountedPrice * item.qty)}</span>
+                    </>
+                  ) : (
+                    <>{currencySymbols[currency]}{convert(item.price * item.qty)}</>
+                  )}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        <div style={{ textAlign: 'right', fontWeight: 700, fontSize: 18 }}>
+          Total: {currencySymbols[currency]}{convert(total)}
+        </div>
       </div>
       <form onSubmit={handleSubmit} style={formStyle}>
         <input name="name" value={form.name} onChange={handleChange} placeholder="Full Name" style={input} />

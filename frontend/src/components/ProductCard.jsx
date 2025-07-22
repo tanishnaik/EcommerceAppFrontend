@@ -1,10 +1,40 @@
 import React, { useContext, useState } from "react";
+import { useGlobalSettings } from "./GlobalSettingsContext";
 import { CartContext } from "../context/CartContext";
 import { WishlistContext } from "../context/WishlistContext";
 import { RecentlyViewedContext } from "../context/RecentlyViewedContext";
 import { useNavigate } from "react-router-dom";
 
-export default function ProductCard({ product, onAddToCart, cardStyle, btnStyle, onQuickView }) {
+export default function ProductCard({ product, onAddToCart, cardStyle, btnStyle, onQuickView, addToCartBtnStyle, goToCartBtnStyle }) {
+  const { language, currency, currencySymbols } = useGlobalSettings();
+  // Simple currency conversion rates (for demo)
+  const rates = { INR: 1, USD: 0.012, EUR: 0.011 };
+  const convert = (amount) => (amount * rates[currency]).toFixed(2);
+  // Translations
+  const t = {
+    en: {
+      outOfStock: "Out of Stock",
+      goToCart: "Go to Cart",
+      addToCart: "Add to Cart",
+      compared: "✓ Compared",
+      compare: "Compare",
+      quickView: "Quick View",
+      reviews: "reviews",
+      category: product.category,
+      description: product.description?.slice(0, 60) + "...",
+    },
+    hi: {
+      outOfStock: "स्टॉक समाप्त",
+      goToCart: "कार्ट देखें",
+      addToCart: "कार्ट में जोड़ें",
+      compared: "✓ तुलना की गई",
+      compare: "तुलना करें",
+      quickView: "त्वरित दृश्य",
+      reviews: "समीक्षाएँ",
+      category: product.category === "Fashion" ? "फैशन" : product.category === "Electronics" ? "इलेक्ट्रॉनिक्स" : product.category,
+      description: product.description?.slice(0, 60) + "...",
+    }
+  };
   const { cart } = useContext(CartContext);
   const { wishlist, addToWishlist, removeFromWishlist } = useContext(WishlistContext);
   const { addRecentlyViewed } = useContext(RecentlyViewedContext);
@@ -51,13 +81,10 @@ export default function ProductCard({ product, onAddToCart, cardStyle, btnStyle,
     marginBottom: 12,
   };
   const goCartBtn = {
-    ...btnStyle,
-    background: '#fff',
-    color: '#2563eb',
-    border: '2px solid #2563eb',
-    marginTop: 12,
+    ...(goToCartBtnStyle || addToCartBtnStyle || btnStyle),
     opacity: isOutOfStock ? 0.5 : 1,
     cursor: isOutOfStock ? 'not-allowed' : 'pointer',
+    marginTop: 12,
   };
   const wishlistBtn = {
     position: 'absolute',
@@ -147,7 +174,7 @@ export default function ProductCard({ product, onAddToCart, cardStyle, btnStyle,
         {inWishlist ? '♥' : '♡'}
       </button>
       {/* Out of Stock Badge */}
-      {isOutOfStock && <div style={badge}>Out of Stock</div>}
+      {isOutOfStock && <div style={badge}>{t[language].outOfStock}</div>}
       {/* Product Image (Quick View on click) */}
       <img
         src={product.image}
@@ -159,26 +186,36 @@ export default function ProductCard({ product, onAddToCart, cardStyle, btnStyle,
         }}
       />
       <h3 style={name}>{product.name}</h3>
-      <p style={cat}>{product.category}</p>
+      <p style={cat}>{t[language].category}</p>
       <div style={ratingStyle}>
         {renderStars(product.rating)}
-        <span style={{ color: '#6b7280', fontSize: 14, marginLeft: 4 }}>({product.reviews || 0})</span>
+        <span style={{ color: '#6b7280', fontSize: 14, marginLeft: 4 }}>
+          ({product.reviews || 0} {t[language].reviews})
+        </span>
       </div>
-      <p style={desc}>{product.description?.slice(0, 60)}...</p>
-      <span style={price}>₹{product.price}</span>
+      <p style={desc}>{t[language].description}</p>
+      {product.discountedPrice ? (
+        <div style={{ fontSize: 17, fontWeight: 700, marginBottom: 4 }}>
+          <span style={{ textDecoration: 'line-through', color: '#ef4444', marginRight: 8 }}>{currencySymbols[currency]}{convert(product.price)}</span>
+          <span style={{ color: '#22c55e', fontWeight: 700 }}>{currencySymbols[currency]}{convert(product.discountedPrice)}</span>
+          <span style={{ color: '#2563eb', marginLeft: 8 }}>({product.discountPercent}% OFF)</span>
+        </div>
+      ) : (
+        <span style={price}>{currencySymbols[currency]}{convert(product.price)}</span>
+      )}
       {inCart ? (
-        <button onClick={() => navigate('/cart')} style={goCartBtn}>
-          <img src="https://cdn-icons-png.flaticon.com/512/1170/1170678.png" alt="Cart" style={{height:18, width:18, marginRight:6, verticalAlign:'middle'}} />
-          Go to Cart
+        <button onClick={() => navigate('/cart')} style={{ ...goCartBtn, display:'flex', alignItems:'center', justifyContent:'center', gap:6 }}>
+          <img src="https://cdn-icons-png.flaticon.com/512/1170/1170678.png" alt="Cart" style={{height:18, width:18, marginRight:2, verticalAlign:'middle'}} />
+          {t[language].goToCart}
         </button>
       ) : (
         <button
           onClick={() => !isOutOfStock && onAddToCart(product)}
-          style={{ ...btnStyle, opacity: isOutOfStock ? 0.5 : 1, cursor: isOutOfStock ? 'not-allowed' : 'pointer', marginTop: 12, display:'flex', alignItems:'center', justifyContent:'center', gap:6 }}
+          style={{ ...(addToCartBtnStyle || btnStyle), opacity: isOutOfStock ? 0.5 : 1, cursor: isOutOfStock ? 'not-allowed' : 'pointer', marginTop: 12, display:'flex', alignItems:'center', justifyContent:'center', gap:6 }}
           disabled={isOutOfStock}
         >
           <img src="https://cdn-icons-png.flaticon.com/512/1170/1170678.png" alt="Add to Cart" style={{height:18, width:18, marginRight:2, verticalAlign:'middle'}} />
-          Add to Cart
+          {t[language].addToCart}
         </button>
       )}
       {/* Compare Button */}
@@ -207,10 +244,10 @@ export default function ProductCard({ product, onAddToCart, cardStyle, btnStyle,
           display:'flex', alignItems:'center', justifyContent:'center', gap:6
         }}
         disabled={inCompare}
-        title={inCompare ? 'Already in compare' : 'Add to compare'}
+        title={inCompare ? t[language].compared : t[language].compare}
       >
         <img src="https://cdn-icons-png.flaticon.com/512/1828/1828919.png" alt="Compare" style={{height:18, width:18, marginRight:2, verticalAlign:'middle'}} />
-        {inCompare ? '✓ Compared' : 'Compare'}
+        {inCompare ? t[language].compared : t[language].compare}
       </button>
       {/* Quick View Button */}
       {hovered && (
@@ -220,7 +257,7 @@ export default function ProductCard({ product, onAddToCart, cardStyle, btnStyle,
             addRecentlyViewed(product);
             onQuickView && onQuickView(product);
           }}
-        >Quick View</button>
+        >{t[language].quickView}</button>
       )}
     </div>
   );

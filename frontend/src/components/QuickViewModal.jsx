@@ -1,4 +1,6 @@
 import React from "react";
+import ARTryOn from "./ARTryOn";
+import SpinWheelDiscount from "./SpinWheelDiscount";
 
 const overlayStyle = {
   position: "fixed",
@@ -18,7 +20,10 @@ const modalStyle = {
   boxShadow: "0 4px 32px rgba(37,99,235,0.12)",
   padding: 32,
   minWidth: 340,
-  maxWidth: 420,
+  maxWidth: 600,
+  width: "90vw",
+  maxHeight: "90vh",
+  overflowY: "auto",
   position: "relative",
   display: "flex",
   flexDirection: "column",
@@ -96,10 +101,24 @@ export default function QuickViewModal({ product, onClose }) {
         <p style={catStyle}>{product.category}</p>
         <div style={ratingStyle}>
           {renderStars(product.rating)}
-          <span style={{ color: '#6b7280', fontSize: 14, marginLeft: 4 }}>({product.reviews || 0})</span>
+          <span style={{ color: '#fbbf24', fontSize: 15, marginLeft: 6 }}>
+            {product.rating ? `${product.rating}/5` : 'No rating'}
+          </span>
         </div>
-        <p style={descStyle}>{product.description}</p>
-        <span style={priceStyle}>₹{product.price}</span>
+        <div style={{ fontSize: 15, color: '#555', marginBottom: 8 }}><b>Review:</b> {product.review || 'No review available.'}</div>
+        <p style={descStyle}><b>Description:</b> {product.description}</p>
+        <span style={priceStyle}>{product.currency || '₹'}{product.price}</span>
+        <div style={{ fontSize: 15, color: '#555', marginBottom: 8 }}><b>Category:</b> {product.category}</div>
+        {/* Try Before You Buy Feature */}
+        {product.tryBeforeBuy && (
+          <div style={{ margin: '18px 0' }}>
+            <ARTryOn productImage={product.image} overlayImage={product.overlayImage || "https://pngimg.com/uploads/sunglasses/sunglasses_PNG44.png"} />
+          </div>
+        )}
+        {/* Spin Wheel Discount for eligible products */}
+        {product.spinDiscount && (
+          <SpinWheelDiscount onResult={product.onDiscount} />
+        )}
       </div>
     </div>
   );
